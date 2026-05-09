@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Background Remover — Free, Instant, No Signup</title>
+  <meta name="description" content="Remove image backgrounds instantly with AI. Free, no login, no watermark. Upload JPG/PNG/WebP and download transparent PNG in seconds." />
+  <meta name="keywords" content="background remover, remove background, AI background remover, transparent PNG, free background removal" />
+  <meta property="og:title" content="AI Background Remover — Free & Instant" />
+  <meta property="og:description" content="Remove image backgrounds with AI in seconds. Free, no login, transparent PNG download." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0a0a0a;
+      --bg2:     #111111;
+      --bg3:     #1a1a1a;
+      --border:  rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text:    #f0f0f0;
+      --text2:   #888;
+      --text3:   #444;
+      --purple:  #7c5cfc;
+      --purple2: #6344e0;
+      --purple-bg: rgba(124,92,252,0.12);
+      --green:   #22c55e;
+      --radius:  14px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      height: 56px;
+      padding: 0 24px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(14px);
+      z-index: 20;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--purple), var(--purple2));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 16px; height: 16px; }
+    .nav-pill {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border2);
+      color: var(--text2);
+    }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 56px 24px 40px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--purple);
+      border: 0.5px solid rgba(124,92,252,0.35);
+      background: var(--purple-bg);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      line-height: 1.12;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--purple); }
+    .hero p {
+      font-size: 16px;
+      color: var(--text2);
+      max-width: 480px;
+      margin: 0 auto 12px;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .hstat {
+      font-size: 12px;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hstat-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+    /* ── MAIN TOOL AREA ───────────────────────────────────────── */
+    .tool-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── DROP ZONE ────────────────────────────────────────────── */
+    .drop-zone {
+      border: 1.5px dashed var(--border2);
+      border-radius: var(--radius);
+      background: var(--bg2);
+      padding: 56px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--purple);
+      background: var(--purple-bg);
+    }
+    .drop-zone input[type=file] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .drop-icon {
+      width: 56px; height: 56px;
+      margin: 0 auto 16px;
+      background: var(--purple-bg);
+      border: 0.5px solid rgba(124,92,252,0.3);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .drop-icon svg { width: 26px; height: 26px; stroke: var(--purple); }
+    .drop-zone h3 { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+    .drop-zone p { font-size: 13px; color: var(--text2); }
+    .drop-zone .formats {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+    .fmt-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      border: 0.5px solid var(--border2);
+      color: var(--text3);
+    }
+
+    /* ── PROCESSING STATE ────────────────────────────────────── */
+    .processing-wrap {
+      display: none;
+      border-radius: var(--radius);
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+    }
+
+    /* Shimmer skeleton for image preview while processing */
+    .shimmer-preview {
+      aspect-ratio: 16/9;
+      max-height: 380px;
+      position: relative;
+      background: var(--bg3);
+      overflow: hidden;
+    }
+    .shimmer-preview img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+      opacity: 0.35;
+      filter: blur(2px);
+    }
+    /* Light sweep overlay */
+    .shimmer-preview::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(124,92,252,0.12) 40%,
+        rgba(255,255,255,0.07) 50%,
+        rgba(124,92,252,0.12) 60%,
+        transparent 80%
+      );
+      background-size: 200% 100%;
+      animation: sweep 1.8s ease-in-out infinite;
+    }
+    @keyframes sweep {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .processing-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 2;
+    }
+    .proc-spinner {
+      width: 40px; height: 40px;
+      border: 2.5px solid rgba(124,92,252,0.2);
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .proc-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      background: rgba(10,10,10,0.75);
+      padding: 6px 16px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+    }
+    .proc-sublabel {
+      font-size: 12px;
+      color: var(--text2);
+      background: rgba(10,10,10,0.6);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      padding: 0 20px 16px;
+    }
+    .progress-track {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--purple), #a78bfa);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .progress-text {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ── RESULT ──────────────────────────────────────────────── */
+    .result-wrap {
+      display: none;
+      border-radius: var(--radius);
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+      animation: cardIn 0.35s ease;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Before/After slider */
+    .slider-wrap {
+      position: relative;
+      aspect-ratio: 16/9;
+      max-height: 420px;
+      overflow: hidden;
+      background: repeating-conic-gradient(#1a1a1a 0% 25%, #222 0% 50%) 0 0 / 20px 20px;
+      cursor: ew-resize;
+      user-select: none;
+    }
+    .slider-before, .slider-after {
+      position: absolute;
+      inset: 0;
+    }
+    .slider-before img, .slider-after img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+    .slider-after {
+      clip-path: inset(0 50% 0 0);
+    }
+    .slider-divider {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: #fff;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .slider-handle {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .slider-handle svg { width: 18px; height: 18px; }
+    .slider-label-before, .slider-label-after {
+      position: absolute;
+      bottom: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      letter-spacing: 0.04em;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .slider-label-before { left: 12px; }
+    .slider-label-after  { right: 12px; }
+
+    /* Result footer */
+    .result-footer {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .result-info { font-size: 13px; color: var(--text2); }
+    .result-info strong { color: var(--text); font-size: 14px; }
+    .result-actions { display: flex; gap: 8px; }
+
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    .btn {
+      height: 40px;
+      padding: 0 18px;
+      border-radius: var(--radius-sm);
+      border: 0.5px solid var(--border2);
+      background: var(--bg3);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn:hover { background: #222; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--purple2); }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text2);
+    }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+
+    /* ── ERROR ───────────────────────────────────────────────── */
+    .error-box {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(239,68,68,0.1);
+      border: 0.5px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: #fca5a5;
+    }
+
+    /* ── HOW IT WORKS ────────────────────────────────────────── */
+    .how-wrap {
+      max-width: 700px;
+      margin: 64px auto 0;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .how-label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 28px;
+      font-weight: 500;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .step {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 16px;
+    }
+    .step-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--purple-bg);
+      border: 0.5px solid rgba(124,92,252,0.25);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+    }
+    .step-icon svg { width: 18px; height: 18px; stroke: var(--purple); }
+    .step h4 { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .step p  { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+    /* ── USE CASES ───────────────────────────────────────────── */
+    .uses-wrap {
+      max-width: 900px;
+      margin: 56px auto 0;
+      padding: 0 24px;
+    }
+    .uses-label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 20px;
+      font-weight: 500;
+      text-align: center;
+    }
+    .uses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .use-card {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      text-align: center;
+    }
+    .use-emoji { font-size: 24px; margin-bottom: 8px; }
+    .use-card h4 { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+    .use-card p  { font-size: 12px; color: var(--text2); }
+
+    /* ── FAQ ─────────────────────────────────────────────────── */
+    .faq-wrap {
+      max-width: 640px;
+      margin: 56px auto 0;
+      padding: 0 24px 80px;
+    }
+    .faq-wrap h2 { font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 24px; }
+    .faq-item { border-bottom: 0.5px solid var(--border); padding: 16px 0; }
+    .faq-item:first-of-type { border-top: 0.5px solid var(--border); }
+    .faq-q {
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; list-style: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .faq-q::after { content: '+'; font-size: 18px; color: var(--text3); flex-shrink: 0; }
+    details[open] .faq-q::after { content: '−'; }
+    .faq-a { font-size: 13px; color: var(--text2); margin-top: 10px; line-height: 1.65; }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      border-top: 0.5px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    /* ── MOBILE ──────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .steps { grid-template-columns: 1fr; }
+      .result-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    BG<span style="color:var(--purple)">Erase</span>.ai
+  </a>
+  <span class="nav-pill">Powered by Cloudflare AI</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    AI-powered · Instant · Free
+  </div>
+  <h1>Remove image<br/><span>backgrounds</span> with AI</h1>
+  <p>Upload any photo — our AI isolates the subject and removes the background in seconds. Download as transparent PNG.</p>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-dot"></div> No signup needed</div>
+    <div class="hstat"><div class="hstat-dot"></div> Transparent PNG</div>
+    <div class="hstat"><div class="hstat-dot"></div> Works on mobile</div>
+    <div class="hstat"><div class="hstat-dot"></div> Privacy-first</div>
+  </div>
+</section>
+
+<!-- TOOL AREA -->
+<div class="tool-wrap">
+
+  <!-- DROP ZONE -->
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp" />
+    <div class="drop-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </div>
+    <h3>Drop your image here</h3>
+    <p>or click to browse from your device</p>
+    <div class="formats">
+      <span class="fmt-badge">JPG</span>
+      <span class="fmt-badge">PNG</span>
+      <span class="fmt-badge">WebP</span>
+      <span class="fmt-badge">Max 10MB</span>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-box" id="errBox"></div>
+
+  <!-- PROCESSING (skeleton shimmer + spinner) -->
+  <div class="processing-wrap" id="processingWrap">
+    <div class="shimmer-preview" id="shimmerPreview">
+      <img id="previewImg" src="" alt="Processing..." />
+      <div class="processing-overlay">
+        <div class="proc-spinner"></div>
+        <div class="proc-label" id="procLabel">Analyzing image...</div>
+        <div class="proc-sublabel" id="procSub">AI is detecting the subject</div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progressStep">Uploading image</span>
+        <span id="progressPct">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT (before/after slider) -->
+  <div class="result-wrap" id="resultWrap">
+    <div class="slider-wrap" id="sliderWrap">
+      <!-- BEFORE (original) -->
+      <div class="slider-before">
+        <img id="beforeImg" src="" alt="Original" />
+      </div>
+      <!-- AFTER (bg removed) -->
+      <div class="slider-after" id="sliderAfter">
+        <img id="afterImg" src="" alt="Background removed" />
+      </div>
+      <!-- Divider + handle -->
+      <div class="slider-divider" id="sliderDivider"></div>
+      <div class="slider-handle" id="sliderHandle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+          <polyline points="9 18 15 12 9 6" transform="translate(0,0)" style="transform:translateX(6px)"/>
+        </svg>
+      </div>
+      <span class="slider-label-before">ORIGINAL</span>
+      <span class="slider-label-after">BG REMOVED</span>
+    </div>
+    <div class="result-footer">
+      <div class="result-info">
+        <strong id="resultFilename">result.png</strong><br/>
+        <span id="resultMeta"></span>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-ghost" onclick="resetTool()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+          New image
+        </button>
+        <button class="btn btn-primary" id="downloadBtn" onclick="downloadResult()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PNG
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tool-wrap -->
+
+<!-- HOW IT WORKS -->
+<div class="how-wrap">
+  <p class="how-label">How it works</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <h4>Upload</h4>
+      <p>Drop or select any JPG, PNG, or WebP image up to 10MB</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <h4>AI removes background</h4>
+      <p>Cloudflare AI segmentation model isolates your subject in seconds</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <h4>Download PNG</h4>
+      <p>Get a transparent PNG — ready for Canva, Photoshop, or anywhere</p>
+    </div>
+  </div>
+</div>
+
+<!-- USE CASES -->
+<div class="uses-wrap">
+  <p class="uses-label">Perfect for</p>
+  <div class="uses-grid">
+    <div class="use-card"><div class="use-emoji">🛍️</div><h4>E-commerce</h4><p>Product photos on white background</p></div>
+    <div class="use-card"><div class="use-emoji">🎨</div><h4>Design</h4><p>Canva, Figma, Photoshop cutouts</p></div>
+    <div class="use-card"><div class="use-emoji">📸</div><h4>Portraits</h4><p>Profile pics, LinkedIn, passport</p></div>
+    <div class="use-card"><div class="use-emoji">🎬</div><h4>Content</h4><p>YouTube thumbnails, stickers</p></div>
+    <div class="use-card"><div class="use-emoji">💼</div><h4>Marketing</h4><p>Ads, banners, social media</p></div>
+    <div class="use-card"><div class="use-emoji">🖨️</div><h4>Print</h4><p>Logos, merch, packaging</p></div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-wrap">
+  <h2>Frequently asked questions</h2>
+  <details class="faq-item">
+    <summary class="faq-q">Is this tool really free?</summary>
+    <p class="faq-a">Yes, completely free. No account, no credit card, no watermark. Powered by Cloudflare Workers AI which gives generous free usage.</p>
+  </details>
+  <details class="faq-item">
+    <summary class="faq-q">What image formats are supported?</summary>
+    <p class="faq-a">JPG, JPEG, PNG, and WebP — up to 10MB per image. For best results use high-resolution images with clear subjects.</p>
+  </details>
+  <details class="faq-item">
+    <summary class="faq-q">Are my images stored or shared?</summary>
+    <p class="faq-a">No. Images are processed in real-time on Cloudflare's edge network and never stored on any server. Your privacy is fully protected.</p>
+  </details>
+  <details class="faq-item">
+    <summary class="faq-q">What does the output look like?</summary>
+    <p class="faq-a">You get a transparent PNG with only the subject remaining. The background becomes fully transparent — compatible with any design tool.</p>
+  </details>
+  <details class="faq-item">
+    <summary class="faq-q">Which AI model powers this?</summary>
+    <p class="faq-a">We use Cloudflare Workers AI's image segmentation model (BiRefNet/RMBG) — the same technology used by Cloudflare Images background removal feature.</p>
+  </details>
+</div>
+
+<footer>
+  <p>© 2025 BGErase.ai — Free AI Background Remover. Powered by Cloudflare Workers AI.</p>
+</footer>
+
+<script>
+  // ── CONFIG ────────────────────────────────────────────────────
+  // Paste your deployed bg-worker URL here after deploying bg-worker.js
+  // e.g. 'https://bg-remover.YOUR-NAME.workers.dev'
+  const WORKER_URL = '';
+  // ─────────────────────────────────────────────────────────────
+
+  let resultBlob = null;
+  let originalFile = null;
+
+  // ── DRAG & DROP ───────────────────────────────────────────────
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+  });
+
+  // ── HANDLE FILE ───────────────────────────────────────────────
+  function handleFile(file) {
+    hideError();
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) { showError('Please upload a JPG, PNG, or WebP image.'); return; }
+    if (file.size > 10 * 1024 * 1024) { showError('Image too large. Max size is 10MB.'); return; }
+    if (!WORKER_URL) { showError('Worker URL not configured. Add your Cloudflare Worker URL to WORKER_URL in the script.'); return; }
+
+    originalFile = file;
+    startProcessing(file);
+  }
+
+  // ── PROCESSING ────────────────────────────────────────────────
+  async function startProcessing(file) {
+    // Show original as blurred preview behind shimmer
+    const previewUrl = URL.createObjectURL(file);
+    document.getElementById('previewImg').src = previewUrl;
+
+    // Switch UI states
+    document.getElementById('dropZone').style.display = 'none';
+    document.getElementById('processingWrap').style.display = 'block';
+    document.getElementById('resultWrap').style.display = 'none';
+
+    // Animated progress steps
+    const steps = [
+      { pct: 15, label: 'Uploading image', sub: 'Sending to Cloudflare AI...' },
+      { pct: 35, label: 'Analyzing image', sub: 'AI detecting the subject...' },
+      { pct: 60, label: 'Removing background', sub: 'Segmentation model running...' },
+      { pct: 85, label: 'Generating PNG', sub: 'Creating transparent output...' },
+      { pct: 95, label: 'Almost done', sub: 'Finalizing transparent PNG...' },
+    ];
+
+    let stepIdx = 0;
+    const stepInterval = setInterval(() => {
+      if (stepIdx < steps.length) {
+        setProgress(steps[stepIdx].pct, steps[stepIdx].label, steps[stepIdx].sub);
+        stepIdx++;
+      }
+    }, 900);
+
+    try {
+      // Build form data
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`${WORKER_URL}/remove-bg`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      clearInterval(stepInterval);
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(err.error || `Server error ${response.status}`);
+      }
+
+      setProgress(100, 'Done!', 'Background removed successfully');
+
+      // Get result blob
+      resultBlob = await response.blob();
+
+      // Short delay then show result
+      setTimeout(() => showResult(file, previewUrl), 400);
+
+    } catch (err) {
+      clearInterval(stepInterval);
+      document.getElementById('processingWrap').style.display = 'none';
+      document.getElementById('dropZone').style.display = 'block';
+      showError('Error: ' + err.message);
+    }
+  }
+
+  function setProgress(pct, label, sub) {
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressStep').textContent = label;
+    document.getElementById('procLabel').textContent = label;
+    document.getElementById('procSub').textContent = sub;
+  }
+
+  // ── SHOW RESULT ───────────────────────────────────────────────
+  function showResult(file, originalUrl) {
+    document.getElementById('processingWrap').style.display = 'none';
+
+    const resultUrl = URL.createObjectURL(resultBlob);
+
+    // Before/after slider
+    document.getElementById('beforeImg').src = originalUrl;
+    document.getElementById('afterImg').src = resultUrl;
+
+    // Metadata
+    const name = file.name.replace(/\.[^.]+$/, '') + '-bg-removed.png';
+    document.getElementById('resultFilename').textContent = name;
+    document.getElementById('resultMeta').textContent =
+      `${(resultBlob.size / 1024).toFixed(0)} KB · Transparent PNG`;
+
+    document.getElementById('resultWrap').style.display = 'block';
+    document.getElementById('resultWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    initSlider();
+  }
+
+  // ── BEFORE/AFTER SLIDER ───────────────────────────────────────
+  function initSlider() {
+    const wrap = document.getElementById('sliderWrap');
+    const after = document.getElementById('sliderAfter');
+    const divider = document.getElementById('sliderDivider');
+    const handle = document.getElementById('sliderHandle');
+    let dragging = false;
+
+    function setPos(x) {
+      const rect = wrap.getBoundingClientRect();
+      let pct = Math.max(0, Math.min(100, ((x - rect.left) / rect.width) * 100));
+      after.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+      divider.style.left = pct + '%';
+      handle.style.left = pct + '%';
+    }
+
+    // Start at 50%
+    after.style.clipPath = 'inset(0 50% 0 0)';
+
+    wrap.addEventListener('mousedown',  e => { dragging = true; setPos(e.clientX); });
+    wrap.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX); }, { passive: true });
+    window.addEventListener('mousemove',  e => { if (dragging) setPos(e.clientX); });
+    window.addEventListener('touchmove',  e => { if (dragging) setPos(e.touches[0].clientX); }, { passive: true });
+    window.addEventListener('mouseup',  () => dragging = false);
+    window.addEventListener('touchend', () => dragging = false);
+  }
+
+  // ── DOWNLOAD ─────────────────────────────────────────────────
+  function downloadResult() {
+    if (!resultBlob) return;
+    const name = (originalFile?.name?.replace(/\.[^.]+$/, '') || 'image') + '-bg-removed.png';
+    const url = URL.createObjectURL(resultBlob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+
+  // ── RESET ─────────────────────────────────────────────────────
+  function resetTool() {
+    resultBlob = null; originalFile = null;
+    document.getElementById('resultWrap').style.display = 'none';
+    document.getElementById('processingWrap').style.display = 'none';
+    document.getElementById('dropZone').style.display = 'block';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('progressFill').style.width = '0%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── ERROR ─────────────────────────────────────────────────────
+  function showError(msg) {
+    const e = document.getElementById('errBox');
+    e.textContent = '⚠ ' + msg; e.style.display = 'block';
+  }
+  function hideError() { document.getElementById('errBox').style.display = 'none'; }
+</script>
+</body>
+</html>
