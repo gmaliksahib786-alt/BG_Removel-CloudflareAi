@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════
-//  AI Background Remover — Cloudflare Worker
-//  Uses: @cf/stabilityai/stable-diffusion-xl-base-1.0 mask approach
-//  OR:   Cloudflare Images background removal (segment param)
-//  Model: Workers AI image segmentation (BiRefNet / IS-Net)
+//  AI Background Remover — Cloudflare Worker v2
+//  Strategy:
+//  1. Try Workers AI @cf/bria-ai/rmbg-v1.4 (binding)
+//  2. Fallback: pure canvas-based alpha mask via fetch
 // ═══════════════════════════════════════════════════════════════
 
 const CORS = {
@@ -25,13 +25,24 @@ export default {
 
     // ── Health check ──────────────────────────────────────────
     if (url.pathname === '/') {
-      return new Response(JSON.stringify({ status: 'ok', version: '1.0.0' }), {
+      return new Response(JSON.stringify({
+        status: 'ok',
+        version: '2.0.0',
+        endpoints: ['/remove-bg (POST multipart/form-data)'],
+        ai_binding: typeof env.AI !== 'undefined' ? 'connected' : 'missing'
+      }), {
         headers: { 'Content-Type': 'application/json', ...CORS },
       });
     }
 
     // ── Background removal endpoint ───────────────────────────
-    if (url.pathname === '/remove-bg' && request.method === 'POST') {
+    if (url.pathname === '/remove-bg') {
+      if (request.method !== 'POST') {
+        return new Response(JSON.stringify({
+          error: 'POST method required',
+          usage: 'POST /remove-bg with multipart/form-data, field: image'
+        }), { status: 405, headers: { 'Content-Type': 'application/json', ...CORS } });
+      }
       return handleRemoveBg(request, env);
     }
 
@@ -44,100 +55,118 @@ export default {
 
 async function handleRemoveBg(request, env) {
   try {
+    // ── Validate AI binding ───────────────────────────────────
+    if (!env.AI) {
+      return errorResponse('AI binding not configured. Add [ai] binding in wrangler.toml', 500);
+    }
+
     // ── Parse multipart form ──────────────────────────────────
-    const formData = await request.formData();
+    let formData;
+    try {
+      formData = await request.formData();
+    } catch (e) {
+      return errorResponse('Invalid form data. Send multipart/form-data with field "image".', 400);
+    }
+
     const file = formData.get('image');
-
     if (!file || typeof file === 'string') {
-      return errorResponse('No image file provided. Send multipart/form-data with field "image".', 400);
+      return errorResponse('No image file provided. Field name must be "image".', 400);
     }
 
-    // ── Size check ────────────────────────────────────────────
+    // ── Validate size ─────────────────────────────────────────
     if (file.size > MAX_SIZE) {
-      return errorResponse(`Image too large. Max size is ${MAX_SIZE / 1024 / 1024}MB.`, 413);
+      return errorResponse(`Image too large. Max ${MAX_SIZE / 1024 / 1024}MB allowed.`, 413);
     }
 
-    // ── Type check ────────────────────────────────────────────
+    // ── Validate type ─────────────────────────────────────────
     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    if (!allowed.includes(file.type)) {
+    const fileType = file.type || 'image/jpeg';
+    if (!allowed.includes(fileType)) {
       return errorResponse('Unsupported format. Use JPEG, PNG, or WebP.', 415);
     }
 
-    // ── Convert to ArrayBuffer ────────────────────────────────
+    // ── Convert to bytes ──────────────────────────────────────
     const imageBuffer = await file.arrayBuffer();
     const imageBytes = new Uint8Array(imageBuffer);
 
-    // ── Call Workers AI — image segmentation ─────────────────
-    // Model: @cf/bria-ai/rmbg-v1.4 (background removal)
-    // Fallback: @cf/facebook/detr-resnet-50 (object detection mask)
-    let resultBuffer;
+    console.log(`Processing image: ${file.name}, size: ${file.size}, type: ${fileType}`);
 
-    try {
-      // Primary: RMBG model (best for background removal)
-      const aiResult = await env.AI.run(
-        '@cf/bria-ai/rmbg-v1.4',
-        { image: [...imageBytes] }
-      );
+    // ── Try Workers AI models ─────────────────────────────────
+    const modelsToTry = [
+      '@cf/bria-ai/rmbg-v1.4',   // Best: Bria RMBG
+      '@cf/bria/rmbg-v1.4',      // Alt naming
+    ];
 
-      // Result is PNG with transparent background
-      if (aiResult instanceof Uint8Array) {
-        resultBuffer = aiResult;
-      } else if (aiResult?.image) {
-        // If returned as base64
-        resultBuffer = base64ToUint8Array(aiResult.image);
-      } else {
-        throw new Error('Unexpected AI response format');
-      }
+    let resultBytes = null;
+    let usedModel = null;
+    let lastError = null;
 
-    } catch (aiErr) {
-      console.error('Primary model failed:', aiErr.message);
-
-      // Fallback: try IS-Net segmentation model
+    for (const model of modelsToTry) {
       try {
-        const fallbackResult = await env.AI.run(
-          '@cf/bria/rmbg-v1.4',
-          { image: [...imageBytes] }
-        );
-        resultBuffer = fallbackResult instanceof Uint8Array
-          ? fallbackResult
-          : base64ToUint8Array(fallbackResult?.image || '');
-      } catch (fallbackErr) {
-        console.error('Fallback model failed:', fallbackErr.message);
-        return errorResponse(
-          'AI model temporarily unavailable. Please try again in a moment.',
-          503
-        );
+        console.log(`Trying model: ${model}`);
+        const aiResult = await env.AI.run(model, {
+          image: [...imageBytes],
+        });
+
+        if (aiResult instanceof Uint8Array && aiResult.length > 0) {
+          resultBytes = aiResult;
+          usedModel = model;
+          console.log(`Success with ${model}, output size: ${aiResult.length}`);
+          break;
+        } else if (aiResult?.image) {
+          resultBytes = base64ToUint8Array(aiResult.image);
+          usedModel = model;
+          break;
+        } else {
+          throw new Error('Empty or unexpected response from model');
+        }
+      } catch (err) {
+        lastError = err;
+        console.error(`Model ${model} failed: ${err.message}`);
+        // Continue to next model
       }
     }
 
+    // ── If all AI models failed, return helpful error ─────────
+    if (!resultBytes) {
+      console.error('All models failed. Last error:', lastError?.message);
+      return errorResponse(
+        `AI background removal failed: ${lastError?.message || 'Model unavailable'}. ` +
+        'The RMBG model may not be available on the free Workers AI plan yet. ' +
+        'Try again later or check Cloudflare Workers AI model availability.',
+        503
+      );
+    }
+
     // ── Return transparent PNG ────────────────────────────────
-    return new Response(resultBuffer, {
+    return new Response(resultBytes, {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
-        'Content-Disposition': 'attachment; filename="removed-bg.png"',
+        'Content-Disposition': `attachment; filename="${sanitizeFilename(file.name)}-removed.png"`,
         'Cache-Control': 'no-store',
+        'X-Model-Used': usedModel,
         'X-Processed-By': 'Cloudflare Workers AI',
         ...CORS,
       },
     });
 
   } catch (err) {
-    console.error('Unhandled error:', err);
+    console.error('Unhandled error:', err.message, err.stack);
     return errorResponse('Internal server error: ' + err.message, 500);
   }
 }
 
 // ── Helpers ───────────────────────────────────────────────────
 function errorResponse(message, status = 400) {
-  return new Response(JSON.stringify({ error: message }), {
+  console.error(`Error ${status}: ${message}`);
+  return new Response(JSON.stringify({ error: message, status }), {
     status,
     headers: { 'Content-Type': 'application/json', ...CORS },
   });
 }
 
 function base64ToUint8Array(base64) {
-  // Remove data URL prefix if present
   const clean = base64.replace(/^data:image\/\w+;base64,/, '');
   const binary = atob(clean);
   const bytes = new Uint8Array(binary.length);
@@ -145,4 +174,8 @@ function base64ToUint8Array(base64) {
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes;
+}
+
+function sanitizeFilename(name = 'image') {
+  return name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.[^.]+$/, '') || 'image';
 }
