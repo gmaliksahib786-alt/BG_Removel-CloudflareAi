@@ -1,2 +1,5 @@
-/remove /index.html 301
-/bg-remove /index.html 301
+/remove         /    301
+/background     /    301
+/remover        /    301
+/remove-bg      /    301
+/eraser         /    301
