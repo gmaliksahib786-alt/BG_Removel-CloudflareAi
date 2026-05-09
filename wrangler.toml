@@ -1,12 +1,7 @@
-name = "bg-remover"
+name = "bg-removel-cloudflareai"
 main = "bg-worker.js"
 compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Workers AI binding — required for AI.run()
 [ai]
 binding = "AI"
-
-# Optional: increase memory for large images
-[limits]
-cpu_ms = 30000
