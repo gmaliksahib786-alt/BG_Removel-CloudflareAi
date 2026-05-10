@@ -1,7 +1,2 @@
 name = "bg-removel-cloudflareai"
-main = "worker.js"
-compatibility_date = "2025-09-01"
-compatibility_flags = ["nodejs_compat"]
-
-[ai]
-binding = "AI"
+pages_build_output_dir = "."
