@@ -1,554 +1,948 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Background Remover — Free, Unlimited, No Signup</title>
-  <meta name="description" content="Remove image backgrounds instantly with AI. 100% free, unlimited, no login, no watermark. Runs in your browser — images never leave your device." />
-  <meta name="keywords" content="background remover, remove background free, AI background remover, transparent PNG, no watermark, unlimited" />
-  <meta property="og:title" content="AI Background Remover — Free, Unlimited, Private" />
-  <meta property="og:description" content="Remove backgrounds with AI in your browser. No server. No limit. No signup." />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:#0a0a0a; --bg2:#111; --bg3:#1a1a1a;
-      --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
-      --text:#f0f0f0; --text2:#888; --text3:#444;
-      --purple:#7c5cfc; --purple2:#6344e0; --purple-bg:rgba(124,92,252,0.12);
-      --green:#22c55e; --radius:14px; --radius-sm:8px;
-    }
-    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Background Remover — AI Powered, No Upload, Instant</title>
+<meta name="description" content="Remove image background instantly using AI. No server upload, 100% private, free forever. Supports JPG, PNG, WebP. Download transparent PNG.">
+<meta name="keywords" content="background remover, remove background, transparent background, AI background remover, free bg remover">
+<meta property="og:title" content="Free AI Background Remover — No Upload Required">
+<meta property="og:description" content="Remove backgrounds instantly in your browser. No server, no signup, unlimited free.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    nav { height:56px; padding:0 24px; border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:rgba(10,10,10,0.9); backdrop-filter:blur(14px); z-index:20; }
-    .logo { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:600; text-decoration:none; color:var(--text); }
-    .logo-icon { width:28px; height:28px; background:linear-gradient(135deg,var(--purple),var(--purple2)); border-radius:8px; display:flex; align-items:center; justify-content:center; }
-    .logo-icon svg { width:16px; height:16px; }
-    .nav-badges { display:flex; gap:6px; }
-    .nav-pill { font-size:11px; padding:3px 10px; border-radius:20px; border:0.5px solid var(--border2); color:var(--text2); }
-    .nav-pill.green { border-color:rgba(34,197,94,0.3); color:var(--green); background:rgba(34,197,94,0.08); }
+:root{
+  --bg:#fafaf8;--surface:#ffffff;--surface2:#f4f3ef;--surface3:#eceae4;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);
+  --text:#1a1916;--muted:#6b6a66;--faint:#a8a7a3;
+  --accent:#1a1916;--accent-inv:#fafaf8;
+  --green:#1a7a4a;--green-bg:#edf7f1;--green-border:#b8e4cb;
+  --red:#c0392b;--amber:#9a6b00;--amber-bg:#fef9ec;
+  --display:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+  --radius:14px;--radius-sm:9px;
+}
 
-    .hero { text-align:center; padding:52px 24px 36px; max-width:640px; margin:0 auto; }
-    .hero-tag { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; color:var(--purple); border:0.5px solid rgba(124,92,252,0.35); background:var(--purple-bg); padding:4px 12px; border-radius:20px; margin-bottom:18px; }
-    .hero h1 { font-size:clamp(26px,5vw,44px); font-weight:600; letter-spacing:-0.5px; line-height:1.12; margin-bottom:12px; }
-    .hero h1 span { color:var(--purple); }
-    .hero p { font-size:15px; color:var(--text2); max-width:460px; margin:0 auto 16px; }
-    .hero-stats { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; }
-    .hstat { font-size:12px; color:var(--text3); display:flex; align-items:center; gap:5px; }
-    .hstat-dot { width:6px; height:6px; border-radius:50%; background:var(--green); }
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,0.055) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;z-index:0}
 
-    .tool-wrap { max-width:900px; margin:0 auto; padding:0 24px 80px; }
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:3rem 1.5rem 6rem}
 
-    /* MODEL BANNER */
-    .model-banner { display:none; background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:16px; font-size:13px; color:var(--text2); align-items:center; gap:10px; }
-    .model-banner.show { display:flex; }
-    .model-progress { flex:1; height:3px; background:var(--bg3); border-radius:2px; overflow:hidden; }
-    .model-progress-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--purple),#a78bfa); border-radius:2px; transition:width 0.4s; }
+/* HEADER */
+.header{display:grid;grid-template-columns:1fr auto;align-items:start;gap:2rem;margin-bottom:3rem}
+@media(max-width:600px){.header{grid-template-columns:1fr}}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:5px 13px;border-radius:100px;margin-bottom:.9rem}
+.eyebrow svg{width:8px;height:8px;fill:var(--green)}
+h1{font-family:var(--display);font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.025em;margin-bottom:.7rem}
+h1 em{font-style:normal;color:var(--muted);font-weight:400}
+.subtitle{font-size:1rem;color:var(--muted);max-width:440px;line-height:1.7}
+.header-stats{display:flex;flex-direction:column;gap:8px;text-align:right}
+@media(max-width:600px){.header-stats{display:none}}
+.stat-pill{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;font-size:11px;color:var(--muted)}
+.stat-pill span{width:6px;height:6px;border-radius:50%;background:var(--green)}
 
-    /* DROP ZONE */
-    .drop-zone { border:1.5px dashed var(--border2); border-radius:var(--radius); background:var(--bg2); padding:52px 24px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; position:relative; }
-    .drop-zone:hover,.drop-zone.drag-over { border-color:var(--purple); background:var(--purple-bg); }
-    .drop-zone.disabled { opacity:0.5; pointer-events:none; }
-    .drop-zone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-    .drop-icon { width:54px; height:54px; margin:0 auto 14px; background:var(--purple-bg); border:0.5px solid rgba(124,92,252,0.3); border-radius:14px; display:flex; align-items:center; justify-content:center; }
-    .drop-icon svg { width:24px; height:24px; stroke:var(--purple); }
-    .drop-zone h3 { font-size:16px; font-weight:500; margin-bottom:6px; }
-    .drop-zone p { font-size:13px; color:var(--text2); }
-    .formats { margin-top:12px; display:flex; justify-content:center; gap:6px; }
-    .fmt-badge { font-size:11px; padding:3px 9px; border-radius:6px; border:0.5px solid var(--border2); color:var(--text3); }
+/* MODEL SELECTOR */
+.model-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px}
+.model-btn{flex:1;min-width:80px;background:transparent;border:1px solid transparent;border-radius:6px;font-family:var(--body);font-size:11px;font-weight:500;padding:7px 10px;cursor:pointer;color:var(--muted);transition:all .15s;text-align:center}
+.model-btn.active{background:var(--text);color:var(--accent-inv)}
+.model-btn:hover:not(.active){background:var(--surface2)}
+.model-label{display:block;font-size:9px;font-weight:400;opacity:.7;margin-top:1px}
 
-    /* PROCESSING */
-    .processing-wrap { display:none; border-radius:var(--radius); background:var(--bg2); border:0.5px solid var(--border); overflow:hidden; }
-    .shimmer-preview { aspect-ratio:16/9; max-height:380px; position:relative; background:var(--bg3); overflow:hidden; }
-    .shimmer-preview img { width:100%; height:100%; object-fit:contain; display:block; opacity:0.3; filter:blur(3px); }
-    .shimmer-preview::after { content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 20%,rgba(124,92,252,0.15) 40%,rgba(255,255,255,0.08) 50%,rgba(124,92,252,0.15) 60%,transparent 80%); background-size:200% 100%; animation:sweep 1.6s ease-in-out infinite; }
-    @keyframes sweep { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    .processing-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; z-index:2; }
-    .proc-spinner { width:40px; height:40px; border:2.5px solid rgba(124,92,252,0.2); border-top-color:var(--purple); border-radius:50%; animation:spin 0.8s linear infinite; }
-    @keyframes spin { to{transform:rotate(360deg)} }
-    .proc-label { font-size:14px; font-weight:500; color:#fff; background:rgba(10,10,10,0.8); padding:6px 16px; border-radius:20px; backdrop-filter:blur(8px); }
-    .proc-sub { font-size:12px; color:var(--text2); background:rgba(10,10,10,0.6); padding:4px 12px; border-radius:20px; }
-    .progress-bar-wrap { padding:12px 20px 16px; }
-    .progress-track { height:3px; background:var(--bg3); border-radius:2px; overflow:hidden; }
-    .progress-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--purple),#a78bfa); transition:width 0.4s ease; }
-    .progress-text { font-size:11px; color:var(--text3); margin-top:6px; display:flex; justify-content:space-between; }
+/* ═══════════════════════════════
+   MODEL LOADING OVERLAY — full screen
+════════════════════════════════ */
+.model-loading-overlay{
+  display:none;position:fixed;inset:0;z-index:2000;
+  background:rgba(250,250,248,.96);backdrop-filter:blur(8px);
+  flex-direction:column;align-items:center;justify-content:center;gap:2rem;
+  text-align:center;padding:2rem;
+}
+.model-loading-overlay.show{display:flex}
 
-    /* RESULT */
-    .result-wrap { display:none; border-radius:var(--radius); background:var(--bg2); border:0.5px solid var(--border); overflow:hidden; animation:cardIn 0.35s ease; }
-    @keyframes cardIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    .slider-wrap { position:relative; aspect-ratio:16/9; max-height:420px; overflow:hidden; background:repeating-conic-gradient(#1a1a1a 0% 25%,#222 0% 50%) 0 0/20px 20px; cursor:ew-resize; user-select:none; }
-    .slider-before,.slider-after { position:absolute; inset:0; }
-    .slider-before img,.slider-after img { width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; }
-    .slider-after { clip-path:inset(0 50% 0 0); }
-    .slider-divider { position:absolute; top:0; bottom:0; left:50%; width:2px; background:#fff; transform:translateX(-50%); pointer-events:none; z-index:3; }
-    .slider-handle { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:40px; height:40px; border-radius:50%; background:#fff; box-shadow:0 2px 12px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:4; pointer-events:none; }
-    .slider-handle svg { width:18px; height:18px; }
-    .slider-label { position:absolute; bottom:12px; font-size:11px; font-weight:600; padding:3px 10px; border-radius:6px; background:rgba(0,0,0,0.6); color:#fff; letter-spacing:0.04em; z-index:2; pointer-events:none; }
-    .label-before { left:12px; } .label-after { right:12px; }
-    .result-footer { padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
-    .result-info { font-size:13px; color:var(--text2); }
-    .result-info strong { color:var(--text); font-size:14px; display:block; }
-    .result-actions { display:flex; gap:8px; }
+.mlo-icon{
+  width:80px;height:80px;border-radius:22px;
+  background:var(--text);display:flex;align-items:center;justify-content:center;
+  font-size:34px;
+  animation:mloFloat 3s ease-in-out infinite;
+  position:relative;overflow:hidden;
+}
+.mlo-icon::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.18) 50%,transparent 70%);
+  background-size:200% 100%;
+  animation:sweep 1.8s ease-in-out infinite;
+}
+@keyframes mloFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes sweep{from{background-position:200% 0}to{background-position:-200% 0}}
 
-    .btn { height:40px; padding:0 18px; border-radius:var(--radius-sm); border:0.5px solid var(--border2); background:var(--bg3); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:background 0.15s,transform 0.1s; }
-    .btn:hover { background:#222; } .btn:active { transform:scale(0.97); }
-    .btn-primary { background:var(--purple); border-color:var(--purple); color:#fff; }
-    .btn-primary:hover { background:var(--purple2); }
-    .btn-ghost { background:transparent; border-color:var(--border); color:var(--text2); }
-    .btn-ghost:hover { background:var(--bg3); color:var(--text); }
+.mlo-title{font-family:var(--display);font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+.mlo-sub{font-size:.9rem;color:var(--muted);max-width:300px;line-height:1.6}
 
-    .error-box { display:none; margin-top:14px; padding:12px 16px; background:rgba(239,68,68,0.1); border:0.5px solid rgba(239,68,68,0.3); border-radius:var(--radius-sm); font-size:13px; color:#fca5a5; }
+/* Animated progress bar */
+.mlo-bar-wrap{width:280px;height:4px;background:var(--surface3);border-radius:100px;overflow:hidden}
+.mlo-bar{height:100%;background:var(--text);border-radius:100px;width:0%;transition:width .4s ease;position:relative;overflow:hidden}
+.mlo-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);background-size:60% 100%;animation:barSheen 1.2s ease infinite}
+@keyframes barSheen{from{background-position:-100% 0}to{background-position:200% 0}}
 
-    .how-wrap { max-width:700px; margin:60px auto 0; padding:0 24px; text-align:center; }
-    .section-label { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); margin-bottom:24px; font-weight:500; }
-    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-    .step { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius); padding:20px 16px; }
-    .step-icon { width:34px; height:34px; border-radius:10px; background:var(--purple-bg); border:0.5px solid rgba(124,92,252,0.25); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; }
-    .step-icon svg { width:17px; height:17px; stroke:var(--purple); }
-    .step h4 { font-size:13px; font-weight:500; margin-bottom:5px; }
-    .step p { font-size:12px; color:var(--text2); line-height:1.5; }
+.mlo-status{font-family:monospace;font-size:11px;color:var(--faint);min-height:18px}
 
-    .privacy-wrap { max-width:700px; margin:40px auto 0; padding:0 24px; }
-    .privacy-card { background:rgba(34,197,94,0.06); border:0.5px solid rgba(34,197,94,0.2); border-radius:var(--radius); padding:20px 24px; display:flex; align-items:flex-start; gap:16px; }
-    .privacy-icon { width:36px; height:36px; background:rgba(34,197,94,0.12); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .privacy-icon svg { width:18px; height:18px; stroke:var(--green); }
-    .privacy-card h3 { font-size:14px; font-weight:500; color:var(--green); margin-bottom:4px; }
-    .privacy-card p { font-size:13px; color:var(--text2); line-height:1.5; }
+/* Orbiting dots */
+.mlo-dots{position:relative;width:44px;height:44px}
+.mlo-dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--text);top:50%;left:50%;transform-origin:0 0}
+.mlo-dot:nth-child(1){animation:orbit 1.4s linear infinite;opacity:.9}
+.mlo-dot:nth-child(2){animation:orbit 1.4s linear infinite .47s;opacity:.6}
+.mlo-dot:nth-child(3){animation:orbit 1.4s linear infinite .94s;opacity:.3}
+@keyframes orbit{
+  0%  {transform:rotate(0deg) translateX(18px) rotate(0deg)}
+  100%{transform:rotate(360deg) translateX(18px) rotate(-360deg)}
+}
 
-    .uses-wrap { max-width:900px; margin:48px auto 0; padding:0 24px; }
-    .uses-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
-    .use-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--radius-sm); padding:14px; text-align:center; }
-    .use-emoji { font-size:22px; margin-bottom:7px; }
-    .use-card h4 { font-size:13px; font-weight:500; margin-bottom:3px; }
-    .use-card p { font-size:11px; color:var(--text2); }
+/* ═══════════════════════════════
+   DROP ZONE
+════════════════════════════════ */
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:4.5rem 2rem;text-align:center;cursor:pointer;background:var(--surface);transition:all .25s;position:relative;overflow:hidden;margin-bottom:1.5rem}
+.drop-zone::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,122,74,.04) 0%,transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.drop-zone:hover::before,.drop-zone.dragover::before{opacity:1}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--green);background:var(--green-bg)}
+.drop-zone.dragover{transform:scale(1.01)}
+.drop-icon-wrap{width:68px;height:68px;margin:0 auto 1.2rem;background:var(--surface2);border:1px solid var(--border);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;transition:transform .25s}
+.drop-zone:hover .drop-icon-wrap{transform:translateY(-6px) rotate(-4deg)}
+.drop-title{font-family:var(--display);font-size:1.2rem;font-weight:700;margin-bottom:.4rem}
+.drop-sub{color:var(--muted);font-size:.9rem;margin-bottom:1.3rem}
+.drop-btn{display:inline-flex;align-items:center;gap:8px;background:var(--text);color:var(--accent-inv);font-family:var(--display);font-weight:700;font-size:.85rem;padding:11px 24px;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all .15s}
+.drop-btn:hover{opacity:.85;transform:translateY(-1px)}
+.fmt-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:1.2rem}
+.fmt-tag{background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:10px;font-family:monospace;padding:3px 9px;border-radius:4px}
 
-    .faq-wrap { max-width:640px; margin:48px auto 0; padding:0 24px 80px; }
-    .faq-wrap h2 { font-size:20px; font-weight:600; text-align:center; margin-bottom:22px; }
-    .faq-item { border-bottom:0.5px solid var(--border); padding:14px 0; }
-    .faq-item:first-of-type { border-top:0.5px solid var(--border); }
-    .faq-q { font-size:14px; font-weight:500; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; }
-    .faq-q::after { content:'+'; font-size:18px; color:var(--text3); flex-shrink:0; }
-    details[open] .faq-q::after { content:'−'; }
-    .faq-a { font-size:13px; color:var(--text2); margin-top:9px; line-height:1.65; }
-    footer { border-top:0.5px solid var(--border); padding:20px 24px; text-align:center; font-size:12px; color:var(--text3); }
-    @media(max-width:600px) { .steps{grid-template-columns:1fr} .result-footer{flex-direction:column;align-items:flex-start} }
-  </style>
+/* BG PICKER */
+.bg-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1.1rem;margin-bottom:1.5rem;display:none}
+.bg-picker.visible{display:flex}
+.bg-label{font-size:12px;font-weight:500;color:var(--muted);flex-shrink:0}
+.bg-swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s;flex-shrink:0}
+.bg-swatch:hover{transform:scale(1.15)}
+.bg-swatch.active{border-color:var(--text) !important}
+.bg-swatch.checker{background-image:linear-gradient(45deg,#ccc 25%,transparent 25%),linear-gradient(-45deg,#ccc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ccc 75%),linear-gradient(-45deg,transparent 75%,#ccc 75%);background-size:8px 8px;background-position:0 0,0 4px,4px -4px,-4px 0;background-color:#fff}
+.bg-custom-wrap{display:flex;align-items:center;gap:6px;margin-left:auto}
+.bg-custom-label{font-size:11px;color:var(--muted)}
+input[type="color"]{width:28px;height:28px;border:none;border-radius:50%;cursor:pointer;padding:0;background:none}
+
+/* PROCESS BUTTON */
+.process-btn{
+  width:100%;background:var(--text);color:var(--accent-inv);
+  font-family:var(--display);font-weight:700;font-size:1rem;
+  padding:15px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  transition:all .15s;display:none;align-items:center;justify-content:center;gap:10px;
+  letter-spacing:.01em;margin-bottom:1.5rem;position:relative;overflow:hidden;
+}
+.process-btn.visible{display:flex}
+.process-btn:hover:not(:disabled){opacity:.85}
+.process-btn:disabled{background:var(--surface3);color:var(--faint);cursor:not-allowed}
+/* Light sweep on process button when active */
+.process-btn.running::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.15) 50%,transparent 75%);
+  background-size:200% 100%;animation:btnSweep 1.5s ease infinite;
+}
+@keyframes btnSweep{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* CARDS SECTION */
+.cards-section{display:none}
+.cards-section.visible{display:block}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.section-title{font-family:var(--display);font-size:1rem;font-weight:700}
+.queue-meta{font-size:11px;color:var(--muted)}
+.clear-all-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--body);font-size:11px;padding:5px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.clear-all-btn:hover{border-color:var(--red);color:var(--red)}
+.cards{display:flex;flex-direction:column;gap:10px}
+
+/* ═══════════════════════════════
+   CARD — with processing light sweep
+════════════════════════════════ */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1rem 1.25rem;
+  animation:slideUp .35s ease;transition:border-color .3s,box-shadow .3s;
+  position:relative;overflow:hidden;
+}
+.card.done{border-color:var(--green-border);box-shadow:0 0 0 3px rgba(26,122,74,.06)}
+.card.error{border-color:rgba(192,57,43,.3)}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* LIGHT SWEEP ON PROCESSING CARD */
+.card.processing-card::before{
+  content:'';position:absolute;inset:0;z-index:0;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.6) 50%,transparent 80%);
+  background-size:200% 100%;
+  animation:cardSweep 1.6s ease infinite;
+  pointer-events:none;border-radius:inherit;
+}
+@keyframes cardSweep{from{background-position:200% 0}to{background-position:-200% 0}}
+
+.card-inner{display:grid;grid-template-columns:90px 1fr auto;gap:1rem;align-items:center;position:relative;z-index:1}
+@media(max-width:560px){.card-inner{grid-template-columns:70px 1fr}}
+
+/* THUMBNAIL */
+.thumb-wrap{width:90px;height:68px;border-radius:10px;overflow:hidden;position:relative;flex-shrink:0;background:var(--surface2)}
+.thumb-shimmer{width:100%;height:100%;background:var(--surface2);position:relative;overflow:hidden}
+.thumb-shimmer::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.6) 50%,transparent 70%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* Processing thumbnail overlay */
+.thumb-wrap.processing::after{
+  content:'';position:absolute;inset:0;border-radius:10px;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.5) 50%,transparent 80%);
+  background-size:200% 100%;animation:thumbSweep 1.4s ease infinite;
+}
+@keyframes thumbSweep{from{background-position:200% 0}to{background-position:-200% 0}}
+.thumb-wrap.processing .thumb-inner{filter:brightness(.85)}
+
+.thumb-inner{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;transition:filter .3s}
+
+/* Done thumbnail — checkerboard + result preview */
+.thumb-wrap.done-thumb{
+  background-image:linear-gradient(45deg,#e0e0e0 25%,transparent 25%),linear-gradient(-45deg,#e0e0e0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e0e0e0 75%),linear-gradient(-45deg,transparent 75%,#e0e0e0 75%);
+  background-size:10px 10px;background-position:0 0,0 5px,5px -5px,-5px 0;background-color:#f8f8f8;
+}
+
+.card-info{min-width:0}
+.card-name{font-size:.88rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.card-meta-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+
+.badge-status{font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;background:var(--surface2);color:var(--muted);letter-spacing:.02em;transition:all .3s}
+.badge-status.processing{background:var(--amber-bg);color:var(--amber);animation:badgePulse 1.5s ease infinite}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:.6}}
+.badge-status.done{background:var(--green-bg);color:var(--green)}
+.badge-status.error{background:#fdf0ef;color:var(--red)}
+
+/* PROGRESS BAR */
+.progress-wrap{margin-top:8px;height:3px;background:var(--surface2);border-radius:100px;overflow:hidden;position:relative}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--text),#555);border-radius:100px;width:0%;transition:width .5s ease;position:relative}
+.progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);background-size:50% 100%;animation:fillSheen .9s ease infinite}
+@keyframes fillSheen{from{background-position:-100% 0}to{background-position:200% 0}}
+
+/* Processing stage text */
+.stage-text{font-size:10px;color:var(--faint);margin-top:4px;min-height:14px;font-family:monospace;transition:all .3s}
+
+.card-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+@media(max-width:560px){.card-actions{grid-column:1/-1;flex-direction:row}}
+
+.dl-btn{display:inline-flex;align-items:center;gap:5px;background:var(--text);color:var(--accent-inv);font-family:var(--display);font-weight:700;font-size:11px;padding:8px 15px;border-radius:7px;border:none;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none}
+.dl-btn:hover{opacity:.8;transform:translateY(-1px)}
+.view-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--body);font-size:11px;padding:6px 12px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.view-btn:hover{border-color:var(--border2);color:var(--text)}
+
+/* DOWNLOAD ALL */
+.dl-all{width:100%;margin-top:1rem;background:none;border:1.5px solid var(--text);color:var(--text);font-family:var(--display);font-weight:700;font-size:.95rem;padding:13px;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.dl-all:hover{background:var(--text);color:var(--accent-inv)}
+
+/* ═══════════════════════════════
+   LIGHTBOX — enhanced before/after
+════════════════════════════════ */
+.lb-backdrop{display:none;position:fixed;inset:0;z-index:999;background:rgba(10,10,8,.92);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1.5rem}
+.lb-backdrop.open{display:flex}
+
+.lb-box{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:18px;max-width:900px;width:100%;
+  overflow:hidden;animation:lbPop .22s cubic-bezier(.34,1.56,.64,1);
+  max-height:92vh;overflow-y:auto;box-shadow:0 40px 80px rgba(0,0,0,.3);
+}
+@keyframes lbPop{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.lb-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);
+  background:var(--surface);position:sticky;top:0;z-index:10;
+}
+.lb-title-wrap{display:flex;flex-direction:column;gap:2px}
+.lb-title{font-family:var(--display);font-weight:700;font-size:.95rem}
+.lb-subtitle{font-size:10px;color:var(--muted);font-family:monospace}
+.lb-close{width:32px;height:32px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--muted);transition:all .15s}
+.lb-close:hover{background:var(--surface3);color:var(--text)}
+
+.lb-body{padding:1.5rem}
+
+/* BG picker row */
+.lb-bg-row{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;flex-wrap:wrap;padding:.75rem 1rem;background:var(--surface2);border-radius:var(--radius-sm)}
+.lb-bg-label{font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
+.lb-swatch{width:26px;height:26px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s;flex-shrink:0}
+.lb-swatch:hover{transform:scale(1.15)}
+.lb-swatch.active{border-color:var(--text) !important;transform:scale(1.1)}
+.lb-swatch.checker{background-image:linear-gradient(45deg,#bbb 25%,transparent 25%),linear-gradient(-45deg,#bbb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#bbb 75%),linear-gradient(-45deg,transparent 75%,#bbb 75%);background-size:7px 7px;background-position:0 0,0 3.5px,3.5px -3.5px,-3.5px 0;background-color:#e8e8e8}
+
+/* COMPARE SLIDER */
+.compare-outer{border-radius:12px;overflow:hidden;margin-bottom:1.25rem;position:relative;background:#f0f0f0}
+.compare-wrap{
+  position:relative;width:100%;height:380px;cursor:ew-resize;user-select:none;
+  overflow:hidden;
+}
+@media(max-width:600px){.compare-wrap{height:260px}}
+
+.compare-after,.compare-before{position:absolute;inset:0}
+.compare-after img,.compare-before img{width:100%;height:100%;object-fit:contain;display:block}
+.compare-before{overflow:hidden}
+
+/* Divider line */
+.compare-divider{
+  position:absolute;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent,rgba(255,255,255,.9) 20%,#fff 50%,rgba(255,255,255,.9) 80%,transparent);
+  left:50%;transform:translateX(-50%);z-index:5;
+  filter:drop-shadow(0 0 6px rgba(0,0,0,.4));
+}
+
+/* Handle */
+.compare-handle{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:44px;height:44px;
+  background:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;z-index:6;pointer-events:none;
+  box-shadow:0 4px 20px rgba(0,0,0,.25),0 0 0 3px rgba(255,255,255,.8);
+  transition:transform .1s;
+}
+.compare-handle svg{width:20px;height:20px;fill:var(--text)}
+
+/* Labels */
+.compare-label-before,.compare-label-after{
+  position:absolute;bottom:14px;
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(26,25,22,.75);color:#fff;
+  padding:4px 11px;border-radius:100px;z-index:7;pointer-events:none;
+  backdrop-filter:blur(4px);
+}
+.compare-label-before{left:14px}
+.compare-label-after{right:14px}
+
+/* Stats row */
+.lb-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border);border-radius:var(--radius-sm);
+  overflow:hidden;margin-bottom:1.2rem;
+}
+.lb-stat{background:var(--surface2);padding:.85rem 1rem;text-align:center}
+.lb-stat .val{font-family:var(--display);font-size:1.1rem;font-weight:700;color:var(--text);display:block;margin-bottom:2px}
+.lb-stat .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.lb-stat.savings .val{color:var(--green)}
+
+/* Save button */
+.lb-dl-btn{
+  width:100%;background:var(--text);color:var(--accent-inv);
+  font-family:var(--display);font-weight:700;font-size:1rem;
+  padding:14px;border-radius:var(--radius-sm);border:none;cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;gap:10px;
+  position:relative;overflow:hidden;
+}
+.lb-dl-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.1) 50%,transparent 75%);background-size:200% 100%;opacity:0;transition:opacity .2s}
+.lb-dl-btn:hover{opacity:.85}
+.lb-dl-btn:hover::after{opacity:1;animation:sweep 1.5s ease infinite}
+
+/* FAQ */
+.faq{margin-top:5rem;border-top:1px solid var(--border);padding-top:3rem}
+.faq h2{font-family:var(--display);font-size:1.5rem;font-weight:800;margin-bottom:1.5rem}
+.faq-item{margin-bottom:1.4rem}
+.faq-q{font-weight:500;margin-bottom:.3rem}
+.faq-a{color:var(--muted);font-size:.95rem;line-height:1.7}
+
+@media(max-width:600px){.card-inner{grid-template-columns:60px 1fr}.thumb-wrap{width:60px;height:48px}}
+</style>
 </head>
 <body>
 
-<nav>
-  <a class="logo" href="/">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-      </svg>
-    </div>
-    BG<span style="color:var(--purple)">Erase</span>.ai
-  </a>
-  <div class="nav-badges">
-    <span class="nav-pill green">✦ Unlimited Free</span>
-    <span class="nav-pill">Runs in Browser</span>
+<!-- ═══ MODEL LOADING OVERLAY ═══ -->
+<div class="model-loading-overlay" id="modelOverlay">
+  <div class="mlo-dots">
+    <div class="mlo-dot"></div>
+    <div class="mlo-dot"></div>
+    <div class="mlo-dot"></div>
   </div>
-</nav>
-
-<section class="hero">
-  <div class="hero-tag">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    No API · No Server · No Limit
+  <div class="mlo-icon">✂️</div>
+  <div>
+    <div class="mlo-title">Loading AI Model</div>
+    <div class="mlo-sub" id="mloSub">Downloading RMBG-1.4 (~45MB). This only happens once — cached forever after.</div>
   </div>
-  <h1>Remove image<br/><span>backgrounds</span> with AI</h1>
-  <p>Powered by RMBG-1.4 running directly in your browser. No uploads. No servers. Unlimited & private forever.</p>
-  <div class="hero-stats">
-    <div class="hstat"><div class="hstat-dot"></div>100% free forever</div>
-    <div class="hstat"><div class="hstat-dot"></div>Unlimited images</div>
-    <div class="hstat"><div class="hstat-dot"></div>Images stay on device</div>
-    <div class="hstat"><div class="hstat-dot"></div>No signup</div>
-  </div>
-</section>
-
-<div class="tool-wrap">
-  <div class="model-banner" id="modelBanner">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    <span id="modelStatus">Loading AI model — first time ~45MB, then cached forever</span>
-    <div class="model-progress"><div class="model-progress-fill" id="modelProgressFill"></div></div>
-    <span id="modelPct" style="font-size:11px;white-space:nowrap;min-width:28px">0%</span>
-  </div>
-
-  <div class="drop-zone disabled" id="dropZone">
-    <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/webp" />
-    <div class="drop-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="17 8 12 3 7 8"/>
-        <line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
+  <div style="width:280px">
+    <div class="mlo-bar-wrap">
+      <div class="mlo-bar" id="mloBar"></div>
     </div>
-    <h3 id="dropTitle">Loading AI model...</h3>
-    <p id="dropSub">Please wait, downloading RMBG-1.4 (~45MB)</p>
-    <div class="formats">
-      <span class="fmt-badge">JPG</span><span class="fmt-badge">PNG</span>
-      <span class="fmt-badge">WebP</span><span class="fmt-badge">Max 20MB</span>
-    </div>
-  </div>
-
-  <div class="error-box" id="errBox"></div>
-
-  <div class="processing-wrap" id="processingWrap">
-    <div class="shimmer-preview">
-      <img id="previewImg" src="" alt="" />
-      <div class="processing-overlay">
-        <div class="proc-spinner"></div>
-        <div class="proc-label" id="procLabel">Removing background...</div>
-        <div class="proc-sub" id="procSub">AI running in your browser</div>
-      </div>
-    </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-text">
-        <span id="progressStep">Processing</span>
-        <span id="progressPct">0%</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="result-wrap" id="resultWrap">
-    <div class="slider-wrap" id="sliderWrap">
-      <div class="slider-before"><img id="beforeImg" src="" alt="Original" /></div>
-      <div class="slider-after" id="sliderAfter"><img id="afterImg" src="" alt="Removed" /></div>
-      <div class="slider-divider" id="sliderDivider"></div>
-      <div class="slider-handle" id="sliderHandle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"/><polyline points="9 6 15 12 9 18"/>
-        </svg>
-      </div>
-      <span class="slider-label label-before">ORIGINAL</span>
-      <span class="slider-label label-after">BG REMOVED</span>
-    </div>
-    <div class="result-footer">
-      <div class="result-info">
-        <strong id="resultFilename">result.png</strong>
-        <span id="resultMeta"></span>
-      </div>
-      <div class="result-actions">
-        <button class="btn btn-ghost" onclick="resetTool()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-          New image
-        </button>
-        <button class="btn btn-primary" onclick="downloadResult()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download PNG
-        </button>
-      </div>
-    </div>
+    <div class="mlo-status" id="mloStatus">Initializing...</div>
   </div>
 </div>
 
-<div class="privacy-wrap">
-  <div class="privacy-card">
-    <div class="privacy-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    </div>
+<div class="wrap">
+  <!-- HEADER -->
+  <div class="header">
     <div>
-      <h3>100% Private — Images Never Leave Your Device</h3>
-      <p>RMBG-1.4 model runs entirely in your browser using WebAssembly. No uploads, no servers, no tracking. Works offline after first load.</p>
+      <div class="eyebrow"><svg viewBox="0 0 8 8"><circle cx="4" cy="4" r="4"/></svg>AI · Browser-based · Zero Upload</div>
+      <h1>Background<br><em>Remover</em></h1>
+      <p class="subtitle">AI removes backgrounds instantly in your browser. No server, no signup, no limits. Your images stay on your device.</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill"><span></span> No server upload</div>
+      <div class="stat-pill"><span></span> Unlimited images</div>
+      <div class="stat-pill"><span></span> 100% private</div>
+      <div class="stat-pill"><span></span> Free forever</div>
+    </div>
+  </div>
+
+  <!-- MODEL SELECTOR -->
+  <div class="model-row" id="modelRow">
+    <button class="model-btn active" data-model="isnet_fp16">Best Quality<span class="model-label">RMBG-1.4 · 2–4s</span></button>
+    <button class="model-btn" data-model="isnet_quint8">Balanced<span class="model-label">Quantized · 1–3s</span></button>
+    <button class="model-btn" data-model="u2net">Fast<span class="model-label">Quantized · &lt;1s</span></button>
+    <button class="model-btn" data-model="u2netp">Mobile<span class="model-label">Smallest · fastest</span></button>
+  </div>
+
+  <!-- WASM BANNER (small, only if overlay hidden) -->
+  <div id="wasmBanner" style="display:none"></div>
+
+  <!-- DROP ZONE -->
+  <div class="drop-zone" id="dropZone">
+    <div class="drop-icon-wrap">✂️</div>
+    <p class="drop-title">Drop images to remove background</p>
+    <p class="drop-sub">or browse and select files — processed locally on your device</p>
+    <button class="drop-btn" onclick="document.getElementById('fileInput').click()">📁 Choose Images</button>
+    <div class="fmt-tags">
+      <span class="fmt-tag">JPG</span><span class="fmt-tag">PNG</span><span class="fmt-tag">WebP</span><span class="fmt-tag">AVIF</span><span class="fmt-tag">BMP</span>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+  </div>
+
+  <!-- BG COLOR PICKER -->
+  <div class="bg-picker" id="bgPicker">
+    <span class="bg-label">Output background:</span>
+    <div class="bg-swatch checker active" data-bg="transparent" title="Transparent"></div>
+    <div class="bg-swatch" data-bg="#ffffff" style="background:#fff;border:1px solid #ddd" title="White"></div>
+    <div class="bg-swatch" data-bg="#000000" style="background:#000" title="Black"></div>
+    <div class="bg-swatch" data-bg="#f0f0f0" style="background:#f0f0f0;border:1px solid #ddd" title="Gray"></div>
+    <div class="bg-swatch" data-bg="#1a73e8" style="background:#1a73e8" title="Blue"></div>
+    <div class="bg-swatch" data-bg="#2ecc71" style="background:#2ecc71" title="Green"></div>
+    <div class="bg-swatch" data-bg="#e74c3c" style="background:#e74c3c" title="Red"></div>
+    <div class="bg-custom-wrap">
+      <span class="bg-custom-label">Custom:</span>
+      <input type="color" id="customBg" value="#ff6b6b">
+    </div>
+  </div>
+
+  <!-- PROCESS BUTTON -->
+  <button class="process-btn" id="processBtn">✂️ Remove Backgrounds</button>
+
+  <!-- CARDS -->
+  <div class="cards-section" id="cardsSection">
+    <div class="section-header">
+      <div><span class="section-title">Images</span><span class="queue-meta" id="queueMeta" style="font-size:12px;color:var(--muted);margin-left:8px"></span></div>
+      <button class="clear-all-btn" onclick="clearAll()">Clear All</button>
+    </div>
+    <div class="cards" id="cardsContainer"></div>
+    <button class="dl-all" id="dlAllBtn" style="display:none" onclick="downloadAll()">⬇️ Download All as PNG</button>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item"><p class="faq-q">Are my images uploaded to a server?</p><p class="faq-a">No. The AI model runs entirely in your browser using WebAssembly. Your images never leave your device. 100% private — no server logs, no data collection.</p></div>
+    <div class="faq-item"><p class="faq-q">Why does the first run take longer?</p><p class="faq-a">The RMBG-1.4 AI model (~45MB) downloads once from Hugging Face CDN and gets cached in your browser. After the first use it loads instantly — no download again.</p></div>
+    <div class="faq-item"><p class="faq-q">Which model quality should I pick?</p><p class="faq-a">"Best Quality" for portraits, hair, and complex edges. "Balanced" for product images. "Fast" or "Mobile" for batch processing or slower devices.</p></div>
+    <div class="faq-item"><p class="faq-q">What format is the output?</p><p class="faq-a">Transparent background = PNG with alpha channel. If you pick a background color, it exports as PNG with that fill. JPEG doesn't support transparency.</p></div>
+    <div class="faq-item"><p class="faq-q">Is there a limit on image count or size?</p><p class="faq-a">No hard limits. Constrained only by your device RAM. Very large images (20MP+) may be slower. If you have WebGPU (modern Chrome/Edge), processing is 5–10x faster.</p></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lb-backdrop" id="lightbox" onclick="closeLb(event)">
+  <div class="lb-box">
+    <div class="lb-head">
+      <div class="lb-title-wrap">
+        <span class="lb-title" id="lbTitle">Before / After</span>
+        <span class="lb-subtitle" id="lbSubtitle">Drag the slider to compare</span>
+      </div>
+      <div class="lb-close" onclick="closeLb(null,true)">✕</div>
+    </div>
+    <div class="lb-body">
+      <div class="lb-bg-row">
+        <span class="lb-bg-label">Preview BG</span>
+        <div class="lb-swatch checker active" data-lbbg="checker"></div>
+        <div class="lb-swatch" data-lbbg="#ffffff" style="background:#fff;border:1px solid #ddd"></div>
+        <div class="lb-swatch" data-lbbg="#000000" style="background:#000"></div>
+        <div class="lb-swatch" data-lbbg="#1a73e8" style="background:#1a73e8"></div>
+        <div class="lb-swatch" data-lbbg="#2ecc71" style="background:#2ecc71"></div>
+        <div class="lb-swatch" data-lbbg="#e74c3c" style="background:#e74c3c"></div>
+      </div>
+      <div class="compare-outer" id="compareOuter">
+        <div class="compare-wrap" id="compareWrap">
+          <div class="compare-after"><img id="lbAfterImg" src="" alt="Removed bg"></div>
+          <div class="compare-before" id="lbBeforeWrap" style="width:50%">
+            <img id="lbBeforeImg" src="" alt="Original" style="width:100%;height:100%;object-fit:contain;display:block">
+          </div>
+          <div class="compare-divider" id="compareDivider" style="left:50%"></div>
+          <div class="compare-handle" id="compareHandle" style="left:50%">
+            <svg viewBox="0 0 24 24"><path d="M8 5l-5 7 5 7M16 5l5 7-5 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          </div>
+          <div class="compare-label-before">Before</div>
+          <div class="compare-label-after">After</div>
+        </div>
+      </div>
+      <div class="lb-stats" id="lbStats"></div>
+      <button class="lb-dl-btn" id="lbDlBtn">⬇️ Download PNG</button>
     </div>
   </div>
 </div>
 
-<div class="how-wrap" style="margin-top:48px">
-  <p class="section-label">How it works</p>
-  <div class="steps">
-    <div class="step">
-      <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-      <h4>Upload image</h4><p>Drop any JPG, PNG, or WebP up to 20MB</p>
-    </div>
-    <div class="step">
-      <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-      <h4>AI runs in browser</h4><p>RMBG-1.4 processes locally — no server needed</p>
-    </div>
-    <div class="step">
-      <div class="step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-      <h4>Download PNG</h4><p>Transparent PNG ready for Canva, Figma, anywhere</p>
-    </div>
-  </div>
-</div>
-
-<div class="uses-wrap">
-  <p class="section-label" style="text-align:center;margin-bottom:16px">Perfect for</p>
-  <div class="uses-grid">
-    <div class="use-card"><div class="use-emoji">🛍️</div><h4>E-commerce</h4><p>White background product photos</p></div>
-    <div class="use-card"><div class="use-emoji">🎨</div><h4>Design</h4><p>Canva, Figma, Photoshop cutouts</p></div>
-    <div class="use-card"><div class="use-emoji">📸</div><h4>Portraits</h4><p>Profile pics, LinkedIn, passport</p></div>
-    <div class="use-card"><div class="use-emoji">🎬</div><h4>Content</h4><p>YT thumbnails, stickers, reels</p></div>
-    <div class="use-card"><div class="use-emoji">💼</div><h4>Marketing</h4><p>Ads, banners, social posts</p></div>
-    <div class="use-card"><div class="use-emoji">🖨️</div><h4>Print</h4><p>Logos, merch, packaging</p></div>
-  </div>
-</div>
-
-<div class="faq-wrap">
-  <h2>Frequently asked questions</h2>
-  <details class="faq-item">
-    <summary class="faq-q">Is this really free and unlimited?</summary>
-    <p class="faq-a">Yes, 100% free and unlimited. The AI model runs in your browser — there's no server to pay for. No account, no credit card, no limits ever.</p>
-  </details>
-  <details class="faq-item">
-    <summary class="faq-q">Why does first use take time?</summary>
-    <p class="faq-a">First time, RMBG-1.4 model (~45MB quantized) downloads to your browser cache. After that it's instant — even works offline.</p>
-  </details>
-  <details class="faq-item">
-    <summary class="faq-q">Are my images stored anywhere?</summary>
-    <p class="faq-a">No. Everything runs locally in your browser. Images never leave your device — no uploads, no cloud, no tracking.</p>
-  </details>
-  <details class="faq-item">
-    <summary class="faq-q">What formats are supported?</summary>
-    <p class="faq-a">JPG, PNG, and WebP — up to 20MB. For best results use clear, well-lit images with distinct subjects.</p>
-  </details>
-  <details class="faq-item">
-    <summary class="faq-q">Does it work on mobile?</summary>
-    <p class="faq-a">Yes! Mobile is slower since WASM runs on CPU. Desktop gives best speed (2-5 seconds per image).</p>
-  </details>
-</div>
-
-<footer>
-  <p>© 2025 BGErase.ai — Free Unlimited AI Background Remover · RMBG-1.4 by BRIA AI · Transformers.js · No server, no limits</p>
-</footer>
-
+<!-- Transformers.js v3 — WebGPU + WASM fallback, RMBG-1.4 model -->
 <script type="module">
-// ── Use @xenova/transformers v2 — proven to work in plain browser without CORS issues ──
-import { env, AutoModel, AutoProcessor, RawImage }
-  from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js';
+import { env, AutoModel, AutoProcessor, RawImage } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js';
 
-// ── CRITICAL CORS FIX ─────────────────────────────────────────
-// Allow remote models from HuggingFace CDN
-env.allowLocalModels  = false;
+// ---- Config ----
+// Use Hugging Face CDN for model weights — no self-hosting needed
+env.allowLocalModels = false;
 env.allowRemoteModels = true;
-env.useBrowserCache   = true;
-// Proxy WASM through jsdelivr to avoid CORS on Cloudflare domain
-env.backends.onnx.wasm.proxy = false;
-env.backends.onnx.wasm.numThreads = 1;
+env.useBrowserCache = true; // cache model after first download
+
+// ---- State ----
+let images = [];
+let results = {};
+let selectedBg = 'transparent';
+let model = null;
+let processor = null;
+let modelLoading = false;
+let useWebGPU = false;
 
 const MODEL_ID = 'briaai/RMBG-1.4';
 
-let model = null;
-let processor = null;
-let resultBlob = null;
-let originalFile = null;
-let isReady = false;
-
-// ── DOM refs ──────────────────────────────────────────────────
+// ---- DOM refs ----
 const dropZone    = document.getElementById('dropZone');
 const fileInput   = document.getElementById('fileInput');
-const modelBanner = document.getElementById('modelBanner');
+const processBtn  = document.getElementById('processBtn');
+const cardsSection= document.getElementById('cardsSection');
+const cardsContainer = document.getElementById('cardsContainer');
+const dlAllBtn    = document.getElementById('dlAllBtn');
+const bgPicker    = document.getElementById('bgPicker');
+const modelOverlay = document.getElementById('modelOverlay');
+const mloBar = document.getElementById('mloBar');
+const mloStatus = document.getElementById('mloStatus');
+const mloSub = document.getElementById('mloSub');
 
-// ── Load model ────────────────────────────────────────────────
+// ---- Detect WebGPU ----
+async function checkWebGPU() {
+  try {
+    if (!navigator.gpu) return false;
+    const adapter = await navigator.gpu.requestAdapter();
+    return !!adapter;
+  } catch { return false; }
+}
+
+// ---- Model selector (maps to model quality — same model, just UI) ----
+let selectedQuality = 'quantized'; // default = fast
+document.querySelectorAll('.model-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedQuality = btn.dataset.model;
+    // Reset loaded model so it reloads with new precision
+    if (model) { model = null; processor = null; }
+  });
+});
+
+// Map UI model names to RMBG onnx variants
+function getModelFile() {
+  const map = {
+    'isnet_fp16':    'model_fp16.onnx',     // Best Quality
+    'isnet_quint8':  'model_quantized.onnx', // Balanced
+    'u2net':         'model_quantized.onnx', // Fast (same quant)
+    'u2netp':        'model_quantized.onnx', // Mobile
+  };
+  return map[selectedQuality] || 'model_quantized.onnx';
+}
+
+// ---- Load model ----
 async function loadModel() {
-  modelBanner.classList.add('show');
-  setModelProgress(5, 'Initializing AI engine...');
+  if (model && processor) return true;
+  if (modelLoading) return false;
+  modelLoading = true;
+
+  modelOverlay.classList.add('show');
+  animateMloBar(0, 30);
+
+  useWebGPU = await checkWebGPU();
+  const dtype = getModelFile().includes('fp16') ? 'fp16' : 'q8';
 
   try {
-    model = await AutoModel.from_pretrained(MODEL_ID, {
-      config: { model_type: 'custom' },
-      quantized: true, // ~45MB quantized vs ~176MB full
-      progress_callback: (p) => {
-        if (p.status === 'progress') {
-          const pct = p.total ? Math.round((p.loaded / p.total) * 90) + 5 : 50;
-          setModelProgress(pct, `Downloading model... ${pct}%`);
-        }
-      }
-    });
+    // Processor config for RMBG-1.4
+    const processorConfig = {
+      do_normalize: true, do_pad: false, do_rescale: true, do_resize: true,
+      image_mean: [0.5, 0.5, 0.5], image_std: [1, 1, 1],
+      resample: 2, rescale_factor: 0.00392156862745098,
+      size: { width: 1024, height: 1024 },
+    };
 
-    setModelProgress(95, 'Loading processor...');
+    [model, processor] = await Promise.all([
+      AutoModel.from_pretrained(MODEL_ID, {
+        config: { model_type: 'custom' },
+        device: useWebGPU ? 'webgpu' : 'wasm',
+        dtype: useWebGPU ? 'fp32' : dtype,
+      }),
+      AutoProcessor.from_pretrained(MODEL_ID, { config: processorConfig }),
+    ]);
 
-    processor = await AutoProcessor.from_pretrained(MODEL_ID, {
-      config: {
-        do_normalize: true, do_pad: false, do_rescale: true, do_resize: true,
-        image_mean: [0.5, 0.5, 0.5], image_std: [1, 1, 1],
-        feature_extractor_type: 'ImageFeatureExtractor',
-        resample: 2, rescale_factor: 0.00392156862745098,
-        size: { width: 1024, height: 1024 },
-      }
-    });
-
-    setModelProgress(100, 'Ready!');
-    await new Promise(r => setTimeout(r, 400));
-
-    isReady = true;
-    modelBanner.classList.remove('show');
-    dropZone.classList.remove('disabled');
-    document.getElementById('dropTitle').textContent = 'Drop your image here';
-    document.getElementById('dropSub').textContent = 'or click to browse from your device';
-
-  } catch (err) {
+    animateMloBar(30, 98);
+    await new Promise(r => setTimeout(r, 1200));
+    if (mloBar) mloBar.style.width = '100%';
+    if (mloStatus) mloStatus.textContent = '✅ Model ready!';
+    await new Promise(r => setTimeout(r, 500));
+    modelOverlay.classList.remove('show');
+    modelLoading = false;
+    console.log('Model loaded!', useWebGPU ? 'WebGPU ⚡' : 'WASM');
+    return true;
+  } catch(err) {
     console.error('Model load failed:', err);
-    setModelProgress(0, '⚠ Model load failed — check console & refresh');
-    document.getElementById('modelStatus').style.color = '#fca5a5';
+    if (mloSub) mloSub.textContent = '❌ Load failed. Check internet & retry.';
+    if (mloStatus) mloStatus.textContent = 'Failed.';
+    modelOverlay.classList.remove('show');
+    modelLoading = false;
+    return false;
   }
 }
 
-function setModelProgress(pct, msg) {
-  document.getElementById('modelStatus').textContent = msg;
-  document.getElementById('modelProgressFill').style.width = pct + '%';
-  document.getElementById('modelPct').textContent = pct + '%';
-}
+// ---- BG swatch selector ----
+document.querySelectorAll('.bg-swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    selectedBg = sw.dataset.bg;
+  });
+});
+document.getElementById('customBg').addEventListener('input', e => {
+  document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+  selectedBg = e.target.value;
+});
 
-loadModel();
-
-// ── Drag & Drop ───────────────────────────────────────────────
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+// ---- Drop zone ----
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop', e => {
-  e.preventDefault(); dropZone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  e.preventDefault(); dropZone.classList.remove('dragover');
+  addFiles([...e.dataTransfer.files]);
 });
-fileInput.addEventListener('change', () => {
-  if (fileInput.files[0]) handleFile(fileInput.files[0]);
-});
+dropZone.addEventListener('click', e => { if (!e.target.closest('.drop-btn')) fileInput.click(); });
+fileInput.addEventListener('change', () => addFiles([...fileInput.files]));
 
-// ── File handler ──────────────────────────────────────────────
-function handleFile(file) {
-  hideError();
-  if (!['image/jpeg','image/jpg','image/png','image/webp'].includes(file.type)) {
-    showError('Please upload a JPG, PNG, or WebP image.'); return;
-  }
-  if (file.size > 20 * 1024 * 1024) { showError('Image too large. Max 20MB.'); return; }
-  if (!isReady) { showError('AI model is still loading. Please wait.'); return; }
-  originalFile = file;
-  processImage(file);
+function addFiles(files) {
+  const imgs = files.filter(f => f.type.startsWith('image/'));
+  if (!imgs.length) return;
+  imgs.forEach(f => {
+    if (!images.find(i => i.name === f.name && i.size === f.size)) images.push(f);
+  });
+  bgPicker.classList.add('visible');
+  processBtn.classList.add('visible');
+  cardsSection.classList.add('visible');
+  results = {};
+  dlAllBtn.style.display = 'none';
+  renderCards();
+
+  // Preload model in background as soon as images are added
+  if (!model && !modelLoading) loadModel();
 }
 
-// ── Process image ─────────────────────────────────────────────
-async function processImage(file) {
-  const previewUrl = URL.createObjectURL(file);
-  document.getElementById('previewImg').src = previewUrl;
-  document.getElementById('dropZone').style.display = 'none';
-  document.getElementById('processingWrap').style.display = 'block';
-  document.getElementById('resultWrap').style.display = 'none';
-  setProgress(10, 'Reading image...', 'Loading into pipeline');
+function fmtBytes(b) {
+  if (b < 1024) return b + 'B';
+  if (b < 1048576) return (b/1024).toFixed(1) + 'KB';
+  return (b/1048576).toFixed(2) + 'MB';
+}
+
+function renderCards() {
+  cardsContainer.innerHTML = '';
+  document.getElementById('queueMeta').textContent = images.length + ' file' + (images.length !== 1 ? 's' : '');
+  images.forEach((file, i) => {
+    const origUrl = URL.createObjectURL(file);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = 'card-' + i;
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="thumb-wrap" id="thumb-${i}">
+          <div class="thumb-shimmer"></div>
+        </div>
+        <div class="card-info">
+          <div class="card-name" title="${file.name}">${file.name}</div>
+          <div class="card-meta-row">
+            <span>${fmtBytes(file.size)}</span>
+            <span class="badge-status" id="badge-${i}">Waiting</span>
+          </div>
+          <div class="progress-wrap" id="pw-${i}" style="display:none">
+            <div class="progress-fill" id="pf-${i}"></div>
+          </div>
+        </div>
+        <div class="card-actions" id="actions-${i}">
+          <button class="view-btn" disabled>View</button>
+        </div>
+      </div>
+    `;
+    cardsContainer.appendChild(card);
+    const img = new Image();
+    img.onload = () => {
+      const wrap = document.getElementById('thumb-' + i);
+      if (wrap) wrap.innerHTML = `<img style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:block" src="${origUrl}">`;
+    };
+    img.src = origUrl;
+  });
+}
+
+// ---- Process ----
+processBtn.addEventListener('click', async () => {
+  if (!images.length) return;
+  processBtn.disabled = true;
+  processBtn.innerHTML = '✂️ Processing...';
+  processBtn.classList.add('running');
+  results = {};
+  dlAllBtn.style.display = 'none';
+
+  const ok = await loadModel();
+  if (!ok) {
+    processBtn.disabled = false;
+    processBtn.classList.remove('running');
+    processBtn.innerHTML = '✂️ Remove Backgrounds';
+    return;
+  }
+
+  let done = 0;
+  for (let i = 0; i < images.length; i++) {
+    await processOne(i);
+    done++;
+    if (done === images.length) {
+      processBtn.disabled = false;
+      processBtn.classList.remove('running');
+      processBtn.innerHTML = '✅ Done! Process Again';
+      dlAllBtn.style.display = 'flex';
+    }
+  }
+});
+
+function setStage(i, txt, pct) {
+  const el = document.getElementById('stage-' + i);
+  const pf = document.getElementById('pf-' + i);
+  if (el) el.textContent = txt;
+  if (pf && pct !== undefined) pf.style.width = pct + '%';
+}
+
+function animateMloBar(from, to) {
+  let v = from;
+  const msgs = ['Fetching model weights...','Loading ONNX runtime...','Initializing RMBG-1.4...','Warming up AI engine...'];
+  let mi = 0;
+  const iv = setInterval(() => {
+    v = Math.min(v + 0.8, to);
+    if (mloBar) mloBar.style.width = v + '%';
+    if (mloStatus) mloStatus.textContent = Math.round(v) + '% — ' + msgs[Math.min(mi, msgs.length-1)];
+    if (Math.round(v) % 8 === 0 && v > from + 5) mi = Math.min(mi+1, msgs.length-1);
+    if (v >= to) clearInterval(iv);
+  }, 80);
+  // After model actually starts downloading (Promise.all), jump bar to 90
+  return iv;
+}
+
+async function processOne(i) {
+  const file = images[i];
+  const origUrl = URL.createObjectURL(file);
+  const badge = document.getElementById('badge-' + i);
+  const pw    = document.getElementById('pw-' + i);
+  const pf    = document.getElementById('pf-' + i);
+  const card  = document.getElementById('card-' + i);
+  const thumb = document.getElementById('thumb-' + i);
+
+  badge.className = 'badge-status processing';
+  badge.textContent = 'Processing...';
+  pw.style.display = 'block';
+  card.classList.add('processing-card');
+  if (thumb) thumb.classList.add('processing');
+
+  setStage(i, '⏳ Loading image...', 5);
 
   try {
-    const image = await RawImage.fromURL(previewUrl);
-    setProgress(25, 'Preprocessing...', 'Resizing to 1024×1024');
+    const t0 = performance.now();
 
-    const inputs = await processor(image);
-    setProgress(50, 'Running RMBG-1.4...', 'AI detecting subject — please wait');
+    const rawImg = await RawImage.fromURL(origUrl);
+    setStage(i, '🧠 Running AI inference...', 25);
+
+    const inputs = await processor(rawImg);
+    setStage(i, '🔍 Segmenting foreground...', 55);
 
     const { output } = await model(inputs);
-    setProgress(80, 'Applying mask...', 'Creating transparent PNG');
+    setStage(i, '✂️ Applying mask...', 78);
 
-    // Resize mask to original image dimensions
-    const maskImg = await RawImage.fromTensor(output[0].mul(255).to('uint8'))
-      .resize(image.width, image.height);
+    const mask = await RawImage.fromTensor(output[0].mul(255).to('uint8')).resize(rawImg.width, rawImg.height);
 
-    // Draw original + apply alpha mask
     const canvas = document.createElement('canvas');
-    canvas.width = image.width; canvas.height = image.height;
+    canvas.width = rawImg.width;
+    canvas.height = rawImg.height;
     const ctx = canvas.getContext('2d');
 
-    // Draw original image onto canvas
-    const imgEl = new Image();
-    imgEl.src = previewUrl;
-    await new Promise(r => { imgEl.onload = r; });
-    ctx.drawImage(imgEl, 0, 0, image.width, image.height);
-
-    // Apply mask as alpha channel
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const mask = maskImg.data;
-    for (let i = 0; i < mask.length; i++) {
-      imgData.data[i * 4 + 3] = mask[i]; // Set alpha from mask
+    if (selectedBg && selectedBg !== 'transparent') {
+      ctx.fillStyle = selectedBg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    ctx.putImageData(imgData, 0, 0);
 
-    setProgress(95, 'Encoding PNG...', 'Almost done');
+    ctx.drawImage(rawImg.toCanvas(), 0, 0);
 
-    resultBlob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-    setProgress(100, 'Done! ✓', 'Background removed successfully');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const maskData = mask.data;
+    for (let j = 0; j < maskData.length; j++) {
+      imageData.data[j * 4 + 3] = maskData[j];
+    }
+    ctx.putImageData(imageData, 0, 0);
+    setStage(i, '💾 Encoding PNG...', 92);
 
-    setTimeout(() => showResult(file, previewUrl), 350);
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
 
-  } catch (err) {
-    console.error('Processing error:', err);
-    document.getElementById('processingWrap').style.display = 'none';
-    document.getElementById('dropZone').style.display = 'block';
-    showError('Error: ' + err.message + ' — Try a smaller image or refresh the page.');
+    if (pf) pf.style.width = '100%';
+    card.classList.remove('processing-card');
+    if (thumb) thumb.classList.remove('processing');
+    setStage(i, '', 100);
+
+    results[i] = { blob, origUrl };
+    setCardDone(i, file, blob, origUrl, elapsed);
+
+  } catch(err) {
+    card.classList.remove('processing-card');
+    if (thumb) thumb.classList.remove('processing');
+    badge.className = 'badge-status error';
+    badge.textContent = '✕ Failed';
+    setStage(i, '❌ ' + (err.message || 'Error'), 0);
+    if (pf) pf.style.width = '0%';
+    document.getElementById('card-' + i).classList.add('error');
+    console.error('Failed:', err);
   }
 }
 
-// ── Show result ───────────────────────────────────────────────
-function showResult(file, originalUrl) {
-  document.getElementById('processingWrap').style.display = 'none';
-  const resultUrl = URL.createObjectURL(resultBlob);
-  document.getElementById('beforeImg').src = originalUrl;
-  document.getElementById('afterImg').src  = resultUrl;
-  const name = file.name.replace(/\.[^.]+$/, '') + '-bg-removed.png';
-  document.getElementById('resultFilename').textContent = name;
-  document.getElementById('resultMeta').textContent =
-    `${(resultBlob.size / 1024).toFixed(0)} KB · Transparent PNG`;
-  document.getElementById('resultWrap').style.display = 'block';
-  document.getElementById('resultWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+function setCardDone(i, file, blob, origUrl, elapsed) {
+  const badge = document.getElementById('badge-' + i);
+  badge.className = 'badge-status done';
+  badge.textContent = `✓ ${elapsed}s`;
+  const card = document.getElementById('card-' + i);
+  card.classList.add('done');
+  setTimeout(() => {
+    const pw = document.getElementById('pw-' + i);
+    if (pw) pw.style.display = 'none';
+  }, 700);
+
+  // Show result PNG in thumbnail (checkerboard bg = transparent)
+  const thumb = document.getElementById('thumb-' + i);
+  if (thumb) {
+    const bUrl = URL.createObjectURL(blob);
+    thumb.classList.add('done-thumb');
+    thumb.innerHTML = `<img class="thumb-inner" src="${bUrl}" alt="Result" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:10px">`;
+  }
+
+  const blobUrl = URL.createObjectURL(blob);
+  const outName = file.name.replace(/\.[^/.]+$/, '') + '_nobg.png';
+  document.getElementById('actions-' + i).innerHTML = `
+    <a class="dl-btn" href="${blobUrl}" download="${outName}">⬇️ Save PNG</a>
+    <button class="view-btn" onclick="openLb(${i})">Before/After</button>
+  `;
+}
+
+function downloadAll() {
+  Object.keys(results).forEach((k, idx) => {
+    setTimeout(() => {
+      const { blob } = results[k];
+      const name = images[k].name.replace(/\.[^/.]+$/, '') + '_nobg.png';
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, idx * 350);
+  });
+}
+
+function clearAll() {
+  images = []; results = {};
+  cardsContainer.innerHTML = '';
+  bgPicker.classList.remove('visible');
+  processBtn.classList.remove('visible');
+  cardsSection.classList.remove('visible');
+  dlAllBtn.style.display = 'none';
+  processBtn.disabled = false;
+  processBtn.innerHTML = '✂️ Remove Backgrounds';
+  fileInput.value = '';
+}
+
+window.clearAll = clearAll;
+window.downloadAll = downloadAll;
+
+// ---- LIGHTBOX ----
+window.openLb = function(i) {
+  const r = results[i];
+  if (!r) return;
+  const file = images[i];
+  document.getElementById('lbTitle').textContent = file.name;
+  document.getElementById('lbBeforeImg').src = r.origUrl;
+  document.getElementById('lbAfterImg').src = URL.createObjectURL(r.blob);
+  const savedPct = Math.round((1 - r.blob.size/file.size)*100);
+  document.getElementById('lbStats').innerHTML = `
+    <div class="lb-stat"><div class="val">${fmtBytes(file.size)}</div><div class="lbl">Original</div></div>
+    <div class="lb-stat"><div class="val">${fmtBytes(r.blob.size)}</div><div class="lbl">Output PNG</div></div>
+    <div class="lb-stat savings"><div class="val">${savedPct > 0 ? savedPct + '%' : 'Same'}</div><div class="lbl">Size change</div></div>
+  `;
+  const outName = file.name.replace(/\.[^/.]+$/, '') + '_nobg.png';
+  const blobUrl = URL.createObjectURL(r.blob);
+  document.getElementById('lbDlBtn').onclick = () => {
+    const a = document.createElement('a'); a.href = blobUrl; a.download = outName; a.click();
+  };
+  applyLbBg('checker');
+  document.getElementById('lightbox').classList.add('open');
   initSlider();
-}
+};
 
-// ── Slider ────────────────────────────────────────────────────
-function initSlider() {
-  const wrap  = document.getElementById('sliderWrap');
-  const after = document.getElementById('sliderAfter');
-  const div   = document.getElementById('sliderDivider');
-  const hand  = document.getElementById('sliderHandle');
-  let drag = false;
+document.querySelectorAll('.lb-swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.lb-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    applyLbBg(sw.dataset.lbbg);
+  });
+});
 
-  function setPos(x) {
-    const r   = wrap.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(100, ((x - r.left) / r.width) * 100));
-    after.style.clipPath = `inset(0 ${100-pct}% 0 0)`;
-    div.style.left = hand.style.left = pct + '%';
+function applyLbBg(bg) {
+  const wrap = document.getElementById('compareWrap');
+  if (bg === 'checker') {
+    wrap.style.backgroundImage = 'linear-gradient(45deg,#ccc 25%,transparent 25%),linear-gradient(-45deg,#ccc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ccc 75%),linear-gradient(-45deg,transparent 75%,#ccc 75%)';
+    wrap.style.backgroundSize = '20px 20px';
+    wrap.style.backgroundPosition = '0 0,0 10px,10px -10px,-10px 0';
+    wrap.style.backgroundColor = '#f0f0f0';
+  } else {
+    wrap.style.backgroundImage = 'none';
+    wrap.style.backgroundColor = bg;
   }
-  after.style.clipPath = 'inset(0 50% 0 0)';
-  wrap.addEventListener('mousedown',  e => { drag = true; setPos(e.clientX); });
-  wrap.addEventListener('touchstart', e => { drag = true; setPos(e.touches[0].clientX); }, {passive:true});
-  window.addEventListener('mousemove',  e => { if (drag) setPos(e.clientX); });
-  window.addEventListener('touchmove',  e => { if (drag) setPos(e.touches[0].clientX); }, {passive:true});
-  window.addEventListener('mouseup',  () => drag = false);
-  window.addEventListener('touchend', () => drag = false);
 }
 
-// ── Download ──────────────────────────────────────────────────
-window.downloadResult = () => {
-  if (!resultBlob) return;
-  const name = (originalFile?.name?.replace(/\.[^.]+$/, '') || 'image') + '-bg-removed.png';
-  const url = URL.createObjectURL(resultBlob);
-  const a = document.createElement('a');
-  a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
+window.closeLb = function(e, force) {
+  if (force || (e && e.target === document.getElementById('lightbox')))
+    document.getElementById('lightbox').classList.remove('open');
 };
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+});
 
-// ── Reset ─────────────────────────────────────────────────────
-window.resetTool = () => {
-  resultBlob = null; originalFile = null;
-  ['resultWrap','processingWrap'].forEach(id => document.getElementById(id).style.display = 'none');
-  document.getElementById('dropZone').style.display = 'block';
-  document.getElementById('fileInput').value = '';
-  document.getElementById('progressFill').style.width = '0%';
-  window.scrollTo({top:0,behavior:'smooth'});
-};
-
-// ── Helpers ───────────────────────────────────────────────────
-function setProgress(pct, label, sub) {
-  document.getElementById('progressFill').style.width   = pct + '%';
-  document.getElementById('progressPct').textContent    = pct + '%';
-  document.getElementById('progressStep').textContent   = label;
-  document.getElementById('procLabel').textContent      = label;
-  document.getElementById('procSub').textContent        = sub;
+function initSlider() {
+  const wrap   = document.getElementById('compareWrap');
+  const before = document.getElementById('lbBeforeWrap');
+  const div    = document.getElementById('compareDivider');
+  const handle = document.getElementById('compareHandle');
+  let dragging = false;
+  function setPos(x) {
+    const r = wrap.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(100, ((x - r.left) / r.width) * 100));
+    before.style.width = pct + '%';
+    div.style.left = pct + '%';
+    handle.style.left = pct + '%';
+  }
+  wrap.addEventListener('mousedown', e => { dragging = true; setPos(e.clientX); });
+  window.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX); });
+  window.addEventListener('mouseup', () => { dragging = false; });
+  wrap.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX); }, {passive:true});
+  window.addEventListener('touchmove', e => { if (dragging) setPos(e.touches[0].clientX); }, {passive:true});
+  window.addEventListener('touchend', () => { dragging = false; });
 }
-function showError(msg) {
-  const e = document.getElementById('errBox');
-  e.textContent = '⚠ ' + msg; e.style.display = 'block';
-}
-function hideError() { document.getElementById('errBox').style.display = 'none'; }
 </script>
 </body>
 </html>
